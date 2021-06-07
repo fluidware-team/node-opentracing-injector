@@ -1,0 +1,63 @@
+{
+  "name": "@fluidware-it/opentracing-injector",
+  "version": "0.1.0",
+  "description": "Instrument your app with ease",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fluidware-team/node-opentracing-injector.git"
+  },
+  "keywords": [
+    "opentracing",
+    "jaeger"
+  ],
+  "author": "Michele (macno) Azzolari",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/fluidware-team/node-opentracing-injector/issues"
+  },
+  "homepage": "https://github.com/fluidware-team/node-opentracing-injector#readme",
+  "dependencies": {
+    "jaeger-client": "^3.18.1",
+    "opentracing": "^0.14.5"
+  },
+  "scripts": {
+    "build": "npm run clean && npm run build:lib",
+    "build:lib": "babel src -d lib",
+    "build:dev": "babel --watch src --out-dir lib",
+    "clean": "rm -rf lib",
+    "lint": "eslint src",
+    "lint:fix": "eslint --fix src",
+    "prepack": "npm run build",
+    "preversion": "npm run lint && npm run test",
+    "test": "NODE_ENV=test nyc mocha --reporter mocha-multi-reporters tests/*.test.js",
+    "start": "node src/index.js",
+    "coverage": "nyc report --reporter=cobertura --reporter=lcov"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.13.0",
+    "@babel/eslint-parser": "^7.13.4",
+    "@babel/node": "^7.13.0",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
+    "@babel/plugin-transform-runtime": "^7.13.10",
+    "@babel/preset-env": "^7.13.5",
+    "@babel/register": "^7.13.0",
+    "eslint": "^7.20.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-promise": "^4.3.1",
+    "mocha": "^8.3.0",
+    "mocha-junit-reporter": "^2.0.0",
+    "mocha-multi-reporters": "^1.5.1",
+    "mocha-sonarqube-reporter": "^1.0.2",
+    "mocha-xunit-reporter": "^2.3.0",
+    "nyc": "^15.1.0",
+    "prettier": "^2.2.1"
+  },
+  "files": [
+    "lib/*"
+  ]
+}

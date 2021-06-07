@@ -1,0 +1,9 @@
+require: '@babel/register'
+
+reporterEnabled: spec, mocha-junit-reporter, mocha-sonarqube-reporter
+mochaJunitReporterReporterOptions:
+  mochaFile: reports/test-results.xml
+
+mochaSonarqubeReporterReporterOptions:
+  output: reports/xunit.xml
+    
