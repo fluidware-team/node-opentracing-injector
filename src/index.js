@@ -123,3 +123,20 @@ export const instrumentAsync = async function (spanName, spanOpts, tags = {}, fu
   }
   return ret;
 };
+
+export const tracingMiddleware = function (req, res, next, reqPropertyName = 'parentSpan') {
+  const span = extractSpanFromHeaders(req.headers, 'http request', {
+    'http.url': req.originalUrl,
+    'http.method': req.method,
+    'http.host': req.hostname
+  });
+  req[reqPropertyName] = span;
+  const { end } = res;
+  res.end = function (chunk, encoding) {
+    res.end = end;
+    res.end(chunk, encoding);
+    span.setTag('http.statusCode', res.statusCode);
+    span.finish();
+  };
+  setImmediate(next);
+};
