@@ -28,7 +28,7 @@ export const getOpenTracer = function () {
 };
 
 export const startSpanWithTags = function (spanName, spanOpts = {}, tags = {}) {
-  const span = tracer.startSpan(spanName, spanOpts);
+  const span = tracer.startSpan(spanName, spanOpts || {});
   if (tags && typeof tags === 'object') {
     Object.keys(tags).forEach(k => {
       span.setTag(k, tags[k]);
