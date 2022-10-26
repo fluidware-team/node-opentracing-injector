@@ -1,6 +1,6 @@
 {
   "name": "@fluidware-it/opentracing-injector",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Instrument your app with ease",
   "main": "lib/index.js",
   "repository": {
