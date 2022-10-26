@@ -80,6 +80,7 @@ export const instrumentSync = function (spanName, spanOpts, tags = {}, func) {
     span.setTag(Tags.ERROR, true);
     span.log({
       event: 'error',
+      error_message: e.message,
       'error.object': e
     });
     throw e;
@@ -99,6 +100,7 @@ export const instrumentCallback = function (spanName, spanOpts, tags = {}, cb) {
       span.setTag(Tags.ERROR, true);
       span.log({
         event: 'error',
+        error_message: e.message,
         'error.object': err
       });
     }
@@ -115,6 +117,7 @@ export const instrumentAsync = async function (spanName, spanOpts, tags = {}, fu
     span.setTag(Tags.ERROR, true);
     span.log({
       event: 'error',
+      error_message: e.message,
       'error.object': e
     });
     throw e;
