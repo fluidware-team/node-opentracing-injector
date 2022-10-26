@@ -100,7 +100,7 @@ export const instrumentCallback = function (spanName, spanOpts, tags = {}, cb) {
       span.setTag(Tags.ERROR, true);
       span.log({
         event: 'error',
-        error_message: e.message,
+        error_message: err.message,
         'error.object': err
       });
     }
