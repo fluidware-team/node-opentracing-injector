@@ -1,12 +1,16 @@
 {
     "extends": [
         "standard",
-        "prettier"
+        "prettier",
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
     ],
     "plugins": [
-        "prettier"
+        "prettier",
+        "@typescript-eslint"
     ],
-    "parser": "@babel/eslint-parser",
+    "parser": "@typescript-eslint/parser",
     "rules": {
         "complexity": ["error", 5],
         "no-undef": "warn",
