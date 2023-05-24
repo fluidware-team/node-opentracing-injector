@@ -3,6 +3,7 @@
   "version": "0.2.2",
   "description": "Instrument your app with ease",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fluidware-team/node-opentracing-injector.git"
@@ -22,9 +23,9 @@
     "opentracing": "^0.14.5"
   },
   "scripts": {
-    "build": "npm run clean && npm run build:lib",
-    "build:lib": "babel src -d lib",
+    "build": "npm run clean && npm run build:ts",
     "build:dev": "babel --watch src --out-dir lib",
+    "build:ts": "tsc",
     "clean": "rm -rf lib",
     "lint": "eslint src",
     "lint:fix": "eslint --fix src",
@@ -36,12 +37,15 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.13.0",
-    "@babel/eslint-parser": "^7.13.4",
     "@babel/node": "^7.13.0",
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/plugin-transform-runtime": "^7.13.10",
     "@babel/preset-env": "^7.13.5",
     "@babel/register": "^7.13.0",
+    "@types/jaeger-client": "^3.18.4",
+    "@types/node": "^20.2.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.7",
+    "@typescript-eslint/parser": "^5.59.7",
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-config-standard": "^16.0.2",
@@ -55,7 +59,8 @@
     "mocha-sonarqube-reporter": "^1.0.2",
     "mocha-xunit-reporter": "^2.3.0",
     "nyc": "^15.1.0",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "typescript": "^5.0.4"
   },
   "files": [
     "lib/*"

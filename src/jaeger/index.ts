@@ -1,10 +1,10 @@
-import { initTracerFromEnv } from 'jaeger-client';
+import { initTracerFromEnv, JaegerTracer, Logger, TracingConfig, TracingOptions } from 'jaeger-client';
 
 export default {
-  init: function (environment, logger) {
+  init: function (environment: NodeJS.ProcessEnv, logger?: Logger) {
     const { npm_package_name, npm_package_version, JAEGER_SERVICE_NAME } = environment;
-    const config = {};
-    const options = {
+    const config: TracingConfig = {};
+    const options: TracingOptions = {
       logger
     };
     if (JAEGER_SERVICE_NAME) {
@@ -18,7 +18,7 @@ export default {
     }
     return initTracerFromEnv(config, options);
   },
-  stop: function (tracer, next) {
+  stop: function (tracer: JaegerTracer, next: () => void) {
     tracer.close(next);
   }
 };
