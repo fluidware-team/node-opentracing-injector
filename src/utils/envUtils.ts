@@ -1,13 +1,13 @@
 export const EnvParse = {
-  envInt: function (value) {
+  envInt: function (value: string) {
     return parseInt(value, 10);
   },
 
-  envJSON: function (value) {
+  envJSON: function (value: string) {
     return JSON.parse(value);
   },
 
-  envBool: function (value) {
+  envBool: function (value?: string) {
     if (value === undefined) {
       return false;
     }

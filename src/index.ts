@@ -1,13 +1,22 @@
-import { FORMAT_TEXT_MAP, FORMAT_HTTP_HEADERS, Tags, Tracer } from 'opentracing';
+import { FORMAT_TEXT_MAP, FORMAT_HTTP_HEADERS, Tags, SpanOptions, Span } from 'opentracing';
 import { getTracerInitiator } from './tracers';
 import { EnvParse } from './utils/envUtils';
+import {
+  DataCarrier,
+  HeadersCarrier,
+  InstrumentAsyncCallback,
+  InstrumentCallback,
+  InstrumentSyncCallback,
+  TagsObject
+} from './interfaces';
+import { JaegerTracer } from 'jaeger-client';
 
-let tracer;
+let tracer: JaegerTracer;
 
-export const initOpenTracer = function (environment, logger = false) {
+export const initOpenTracer = function (environment: NodeJS.ProcessEnv, logger = undefined) {
   const { OPENTRACING_DISABLE, OPENTRACING_CLIENT_NAME } = environment || process.env;
   if (EnvParse.envBool(OPENTRACING_DISABLE) || !OPENTRACING_CLIENT_NAME) {
-    tracer = new Tracer();
+    tracer = new JaegerTracer();
     return tracer;
   }
   const initiator = getTracerInitiator(OPENTRACING_CLIENT_NAME);
@@ -27,7 +36,7 @@ export const getOpenTracer = function () {
   return tracer;
 };
 
-export const startSpanWithTags = function (spanName, spanOpts = {}, tags = {}) {
+export const startSpanWithTags = function (spanName: string, spanOpts: SpanOptions = {}, tags: TagsObject = {}) {
   const span = tracer.startSpan(spanName, spanOpts || {});
   if (tags && typeof tags === 'object') {
     Object.keys(tags).forEach(k => {
@@ -37,8 +46,8 @@ export const startSpanWithTags = function (spanName, spanOpts = {}, tags = {}) {
   return span;
 };
 
-export const extractSpanFromData = function (data, spanName, tags) {
-  const spanOpts = {};
+export const extractSpanFromData = function (data: DataCarrier, spanName: string, tags: TagsObject) {
+  const spanOpts: SpanOptions = {};
   if (data.trace) {
     const parentSpan = tracer.extract(FORMAT_TEXT_MAP, data.trace);
     if (parentSpan) {
@@ -48,8 +57,8 @@ export const extractSpanFromData = function (data, spanName, tags) {
   return startSpanWithTags(spanName, spanOpts, tags);
 };
 
-export const extractSpanFromHeaders = function (headers, spanName, tags) {
-  const spanOpts = {};
+export const extractSpanFromHeaders = function (headers: HeadersCarrier, spanName: string, tags: TagsObject) {
+  const spanOpts: SpanOptions = {};
   const parentSpan = tracer.extract(FORMAT_HTTP_HEADERS, headers);
   if (parentSpan) {
     spanOpts.childOf = parentSpan;
@@ -57,21 +66,26 @@ export const extractSpanFromHeaders = function (headers, spanName, tags) {
   return startSpanWithTags(spanName, spanOpts, tags);
 };
 
-export const injectSpanIntoHeaders = function (span, headers = {}) {
+export const injectSpanIntoHeaders = function (span: Span, headers: HeadersCarrier = {}) {
   span.setTag(Tags.SPAN_KIND, Tags.SPAN_KIND_RPC_CLIENT);
   // Send span context via request headers (parent id etc.)
   tracer.inject(span, FORMAT_HTTP_HEADERS, headers);
   return headers;
 };
 
-export const injectSpanIntoData = function (span, data = {}) {
+export const injectSpanIntoData = function (span: Span, data: DataCarrier = { trace: undefined }) {
   span.setTag(Tags.SPAN_KIND, Tags.SPAN_KIND_MESSAGING_PRODUCER);
   // Send span context via data map (parent id etc.)
   tracer.inject(span, FORMAT_TEXT_MAP, data.trace);
   return data;
 };
 
-export const instrumentSync = function (spanName, spanOpts, tags = {}, func) {
+export const instrumentSync = function (
+  spanName: string,
+  spanOpts: SpanOptions,
+  tags: TagsObject = {},
+  func: InstrumentSyncCallback
+) {
   const span = startSpanWithTags(spanName, spanOpts, tags);
   let ret;
   try {
@@ -90,12 +104,17 @@ export const instrumentSync = function (spanName, spanOpts, tags = {}, func) {
   return ret;
 };
 
-export const instrumentCallback = function (spanName, spanOpts, tags = {}, cb) {
+export const instrumentCallback = function (
+  spanName: string,
+  spanOpts: SpanOptions,
+  tags: TagsObject = {},
+  cb: InstrumentCallback
+) {
   const span = startSpanWithTags(spanName, spanOpts, tags);
   if (!cb || typeof cb !== 'function') {
     throw new Error('callback is required and must be a function');
   }
-  cb(span, function (err) {
+  cb(span, function (err: Error) {
     if (err) {
       span.setTag(Tags.ERROR, true);
       span.log({
@@ -108,7 +127,12 @@ export const instrumentCallback = function (spanName, spanOpts, tags = {}, cb) {
   });
 };
 
-export const instrumentAsync = async function (spanName, spanOpts, tags = {}, func) {
+export const instrumentAsync = async function (
+  spanName: string,
+  spanOpts: SpanOptions,
+  tags: TagsObject = {},
+  func: InstrumentAsyncCallback
+) {
   const span = startSpanWithTags(spanName, spanOpts, tags);
   let ret;
   try {
